@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import warnings
+from asyncio import AbstractEventLoop
 from contextvars import ContextVar
 from copy import deepcopy
 from inspect import isclass
@@ -46,7 +47,7 @@ class Tortoise:
 
     @classmethod
     def describe_model(
-        cls, model: Type[Model], serializable: bool = True
+            cls, model: Type[Model], serializable: bool = True
     ) -> dict:  # pragma: nocoverage
         """
         Describes the given list of models or ALL registered models.
@@ -72,7 +73,7 @@ class Tortoise:
 
     @classmethod
     def describe_models(
-        cls, models: Optional[List[Type[Model]]] = None, serializable: bool = True
+            cls, models: Optional[List[Type[Model]]] = None, serializable: bool = True
     ) -> Dict[str, dict]:
         """
         Describes the given list of models or ALL registered models.
@@ -372,7 +373,8 @@ class Tortoise:
         return discovered_models
 
     @classmethod
-    async def _init_connections(cls, connections_config: dict, create_db: bool) -> None:
+    async def _init_connections(cls, connections_config: dict, create_db: bool,
+                                loop: Optional[AbstractEventLoop] = None) -> None:
         for name, info in connections_config.items():
             if isinstance(info, str):
                 info = expand_db_url(info)
@@ -382,13 +384,13 @@ class Tortoise:
             connection = client_class(**db_params)
             if create_db:
                 await connection.db_create()
-            await connection.create_connection(with_db=True)
+            await connection.create_connection(with_db=True, loop=loop)
             cls._connections[name] = connection
             current_transaction_map[name] = ContextVar(name, default=connection)
 
     @classmethod
     def init_models(
-        cls, models_paths: List[str], app_label: str, _init_relations: bool = True
+            cls, models_paths: List[str], app_label: str, _init_relations: bool = True
     ) -> None:
         """
         Early initialisation of Tortoise ORM Models.
@@ -461,12 +463,13 @@ class Tortoise:
 
     @classmethod
     async def init(
-        cls,
-        config: Optional[dict] = None,
-        config_file: Optional[str] = None,
-        _create_db: bool = False,
-        db_url: Optional[str] = None,
-        modules: Optional[Dict[str, List[str]]] = None,
+            cls,
+            config: Optional[dict] = None,
+            config_file: Optional[str] = None,
+            _create_db: bool = False,
+            db_url: Optional[str] = None,
+            modules: Optional[Dict[str, List[str]]] = None,
+            loop: Optional[AbstractEventLoop] = None
     ) -> None:
         """
         Sets up Tortoise-ORM.
@@ -552,7 +555,7 @@ class Tortoise:
             str(apps_config),
         )
 
-        await cls._init_connections(connections_config, _create_db)
+        await cls._init_connections(connections_config, _create_db, loop)
         cls._init_apps(apps_config)
 
         cls._inited = True

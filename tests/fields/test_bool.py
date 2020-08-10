@@ -1,9 +1,9 @@
 from tests import testmodels
-from tortoise.contrib import test
 from tortoise.exceptions import IntegrityError
+from tortoise.test_case import TestCase
 
 
-class TestBooleanFields(test.TestCase):
+class TestBooleanFields(TestCase):
     async def test_empty(self):
         with self.assertRaises(IntegrityError):
             await testmodels.BooleanFields.create()

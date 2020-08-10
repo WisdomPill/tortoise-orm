@@ -1,19 +1,21 @@
 # pylint: disable=W1503
-from tortoise.contrib import test
+from unittest import expectedFailure, skip
+
+from tortoise.test_case import SimpleTestCase
 
 
-class TestTesterSync(test.SimpleTestCase):
+class TestTesterSync(SimpleTestCase):
     def setUp(self):
         self.moo = "SET"
 
     def tearDown(self):
         self.assertEqual(self.moo, "SET")
 
-    @test.skip("Skip it")
+    @skip("Skip it")
     def test_skip(self):
         self.assertTrue(False)
 
-    @test.expectedFailure
+    @expectedFailure
     def test_fail(self):
         self.assertTrue(False)
 
@@ -21,18 +23,18 @@ class TestTesterSync(test.SimpleTestCase):
         self.assertEqual(self.moo, "SET")
 
 
-class TestTesterASync(test.SimpleTestCase):
-    async def setUp(self):
+class TestTesterASync(SimpleTestCase):
+    async def asyncSetUp(self):
         self.baa = "TES"
 
-    async def tearDown(self):
+    async def asyncTearDown(self):
         self.assertEqual(self.baa, "TES")
 
-    @test.skip("Skip it")
+    @skip("Skip it")
     async def test_skip(self):
         self.assertTrue(False)
 
-    @test.expectedFailure
+    @expectedFailure
     async def test_fail(self):
         self.assertTrue(False)
 

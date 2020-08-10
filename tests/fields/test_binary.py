@@ -1,10 +1,13 @@
 from tests import testmodels
-from tortoise.contrib import test
 from tortoise.exceptions import ConfigurationError, IntegrityError
 from tortoise.fields import BinaryField
+from tortoise.test_case import TestCase
 
 
-class TestBinaryFields(test.TestCase):
+class TestBinaryFields(TestCase):
+    tortoise_test_modules = ['tests.testmodels']
+    db_url = 'sqlite://:memory:'
+
     async def test_empty(self):
         with self.assertRaises(IntegrityError):
             await testmodels.BinaryFields.create()

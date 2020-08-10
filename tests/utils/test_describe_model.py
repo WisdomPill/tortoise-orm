@@ -16,16 +16,16 @@ from tests.testmodels import (
     UUIDPkModel,
 )
 from tortoise import Tortoise, fields
-from tortoise.contrib import test
 from tortoise.fields.relational import (
     BackwardFKRelation,
     ForeignKeyFieldInstance,
     ManyToManyFieldInstance,
     OneToOneFieldInstance,
 )
+from tortoise.test_case import SimpleTestCase, TestCase
 
 
-class TestDescribeModels(test.TestCase):
+class TestDescribeModels(TestCase):
     def test_describe_models_all_serializable(self):
         val = Tortoise.describe_models()
         json.dumps(val)
@@ -40,7 +40,7 @@ class TestDescribeModels(test.TestCase):
         self.assertIn("models.Event", val.keys())
 
 
-class TestDescribeModel(test.SimpleTestCase):
+class TestDescribeModel(SimpleTestCase):
     maxDiff = None
 
     def test_describe_field_noninit_ser(self):

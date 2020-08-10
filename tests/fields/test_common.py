@@ -1,8 +1,8 @@
 from tortoise import fields
-from tortoise.contrib import test
+from tortoise.test_case import SimpleTestCase
 
 
-class TestRequired(test.SimpleTestCase):
+class TestRequired(SimpleTestCase):
     async def test_required_by_default(self):
         self.assertTrue(fields.Field().required)
 

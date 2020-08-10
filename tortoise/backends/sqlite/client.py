@@ -1,6 +1,7 @@
 import asyncio
 import os
 import sqlite3
+from asyncio import AbstractEventLoop
 from functools import wraps
 from typing import Any, Callable, List, Optional, Sequence, Tuple, TypeVar
 
@@ -54,9 +55,9 @@ class SqliteClient(BaseDBAsyncClient):
         self._connection: Optional[aiosqlite.Connection] = None
         self._lock = asyncio.Lock()
 
-    async def create_connection(self, with_db: bool) -> None:
+    async def create_connection(self, with_db: bool, loop: Optional[AbstractEventLoop] = None) -> None:
         if not self._connection:  # pragma: no branch
-            self._connection = aiosqlite.connect(self.filename, isolation_level=None)
+            self._connection = aiosqlite.connect(self.filename, loop=loop, isolation_level=None)
             self._connection.start()
             await self._connection._connect()
             self._connection._conn.row_factory = sqlite3.Row
@@ -123,7 +124,7 @@ class SqliteClient(BaseDBAsyncClient):
 
     @translate_exceptions
     async def execute_query(
-        self, query: str, values: Optional[list] = None
+            self, query: str, values: Optional[list] = None
     ) -> Tuple[int, Sequence[dict]]:
         query = query.replace("\x00", "'||CHAR(0)||'")
         async with self.acquire_connection() as connection:

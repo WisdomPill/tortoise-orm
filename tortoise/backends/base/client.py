@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from asyncio import AbstractEventLoop
 from typing import Any, List, Optional, Sequence, Tuple, Type, Union
 
 from pypika import Query
@@ -30,15 +31,15 @@ class Capabilities:
     """
 
     def __init__(
-        self,
-        dialect: str,
-        *,
-        # Is the connection a Daemon?
-        daemon: bool = True,
-        # Deficiencies to work around:
-        requires_limit: bool = False,
-        inline_comment: bool = False,
-        supports_transactions: bool = True,
+            self,
+            dialect: str,
+            *,
+            # Is the connection a Daemon?
+            daemon: bool = True,
+            # Deficiencies to work around:
+            requires_limit: bool = False,
+            inline_comment: bool = False,
+            supports_transactions: bool = True,
     ) -> None:
         super().__setattr__("_mutable", True)
 
@@ -96,7 +97,7 @@ class BaseDBAsyncClient:
         self.connection_name = connection_name
         self.fetch_inserted = fetch_inserted
 
-    async def create_connection(self, with_db: bool) -> None:
+    async def create_connection(self, with_db: bool, loop: Optional[AbstractEventLoop] = None) -> None:
         """
         Establish a DB connection.
 
@@ -153,7 +154,7 @@ class BaseDBAsyncClient:
         raise NotImplementedError()  # pragma: nocoverage
 
     async def execute_query(
-        self, query: str, values: Optional[list] = None
+            self, query: str, values: Optional[list] = None
     ) -> Tuple[int, Sequence[dict]]:
         """
         Executes a RAW SQL query statement, and returns the resultset.

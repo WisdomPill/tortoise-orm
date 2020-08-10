@@ -1,8 +1,8 @@
 from tests.testmodels import MyAbstractBaseModel, MyDerivedModel
-from tortoise.contrib import test
+from tortoise.test_case import SimpleTestCase
 
 
-class TestInheritance(test.SimpleTestCase):
+class TestInheritance(SimpleTestCase):
     async def test_basic(self):
         self.assertTrue(hasattr(MyAbstractBaseModel(), "name"))
         self.assertTrue(hasattr(MyDerivedModel(), "created_at"))

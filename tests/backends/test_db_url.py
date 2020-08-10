@@ -1,9 +1,9 @@
 from tortoise.backends.base.config_generator import expand_db_url, generate_config
-from tortoise.contrib import test
 from tortoise.exceptions import ConfigurationError
+from tortoise.test_case import SimpleTestCase
 
 
-class TestConfigGenerator(test.SimpleTestCase):
+class TestConfigGenerator(SimpleTestCase):
     def test_unknown_scheme(self):
         with self.assertRaises(ConfigurationError):
             expand_db_url("moo://baa")
